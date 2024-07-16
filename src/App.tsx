@@ -1,24 +1,24 @@
 
 import Header from "./components/Header"
 import Guitar from "./components/Guitar"
-import { useCart } from "./hooks/useCart"
+import { useReducer, useEffect } from "react"
+import { cartReducer, initialState } from "./reducers/card-reducer"
 
 function App() {
 
-  //importacion de los hooks
-  const { data, cart, addToCart, removeFromCart, decreaseQuantity, increaseQuantity, clearCart, isEmpty, cartTotal } = useCart()
+  //hacemos la importación del useReducer como arreglo
+  const [state, dispatch] =useReducer(cartReducer, initialState)
 
+  //método para mantener los datos LocalStorage
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(state.cart))//pasamos a string el carrito para guardarlo, ya que este no acepta sino strings
+  }, [state.cart])//cada que cart cambia ejecta
 
   return (
     <>
     <Header
-    cart={cart}
-    removeFromCart={removeFromCart}
-    increaseQuantity={increaseQuantity}
-    decreaseQuantity={decreaseQuantity}
-    clearCart={clearCart}
-    isEmpty={isEmpty}
-    cartTotal={cartTotal}
+    cart={state.cart}
+    dispatch={dispatch}
     />{/*Este de aca es un componente*/}
 
 
@@ -26,15 +26,14 @@ function App() {
         <h2 className="text-center">Nuestra Colección</h2>
         <div className="row mt-5">
 
-        {/*Este es codigo js para que nos de todas las guitarras props*/}  
-        {data.map((guitar) => (
+        {/*Este es código js para que nos de todas las guitarras props*/}  
+        {state.data.map((guitar) => (
              <Guitar
              key={guitar.id}
              guitar={guitar}
-             addToCart={addToCart}
+             dispatch={dispatch}
              />
           ))}
-
         </div>
     </main>
 
